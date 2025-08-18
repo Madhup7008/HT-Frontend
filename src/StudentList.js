@@ -7,8 +7,11 @@ function StudentFeesList() {
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [search, setSearch] = useState("");
 
+  // ✅ Use deployed backend API
+  const API_BASE = "https://ht-backend-5eby.onrender.com";
+
   useEffect(() => {
-    axios.get("http://localhost:5050/api/students_with_fees")
+    axios.get(`${API_BASE}/api/students_with_fees`)
       .then(res => {
         setStudents(res.data);
         setLoading(false);

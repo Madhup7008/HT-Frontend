@@ -6,6 +6,9 @@ export default function RegisterStudent() {
   const [errors, setErrors] = useState({});
   const [success, setSuccess] = useState('');
 
+  // ✅ Use deployed backend API instead of localhost
+  const API_BASE = "https://ht-backend-5eby.onrender.com";
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
     setErrors({});  // clear errors on input
@@ -34,7 +37,7 @@ export default function RegisterStudent() {
     if (!validateForm()) return;
 
     try {
-      const res = await axios.post('http://localhost:5050/register', form);
+      const res = await axios.post(`${API_BASE}/register`, form);
       setSuccess('Student registered successfully!');
       setForm({ name: '', phone: '', email: '' });
     } catch (err) {

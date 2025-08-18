@@ -7,13 +7,16 @@ export default function FeeList() {
   const [filter, setFilter] = useState('all');
   const [updating, setUpdating] = useState(null); // feeId being updated
 
+  // ✅ Use deployed backend API instead of localhost
+  const API_BASE = "https://ht-backend-5eby.onrender.com";
+
   useEffect(() => {
     fetchFees();
   }, []);
 
   const fetchFees = () => {
     setLoading(true);
-    axios.get('http://localhost:5050/all_fees')
+    axios.get(`${API_BASE}/all_fees`)
       .then(res => setFees(res.data))
       .catch(() => setFees([]))
       .finally(() => setLoading(false));
@@ -22,7 +25,7 @@ export default function FeeList() {
   const handleTogglePaid = async (fee) => {
     setUpdating(fee._id);
     try {
-      await axios.put(`http://localhost:5050/update_fee/${fee._id}`, {
+      await axios.put(`${API_BASE}/update_fee/${fee._id}`, {
         paid: !fee.paid
       });
       fetchFees();

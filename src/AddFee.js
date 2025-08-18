@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api'; // make sure the path is correct
 
 export default function AddFee() {
   const [students, setStudents] = useState([]);
@@ -12,8 +12,9 @@ export default function AddFee() {
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
 
+  // fetch students from backend
   useEffect(() => {
-    axios.get('http://localhost:5050/api/students')
+    api.get('/api/students')
       .then(res => setStudents(res.data))
       .catch(() => setStudents([]));
   }, []);
@@ -32,7 +33,7 @@ export default function AddFee() {
       return;
     }
     try {
-      await axios.post('http://localhost:5050/add_fee', form);
+      await api.post('/add_fee', form);  // ✅ uses api.js instead of axios.post
       setSuccess('Fee added successfully!');
       setError('');
       setForm({

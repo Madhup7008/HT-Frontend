@@ -5,8 +5,11 @@ function UnpaidFeesTable() {
   const [unpaid, setUnpaid] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // ✅ Use deployed backend API
+  const API_BASE = "https://ht-backend-5eby.onrender.com";
+
   useEffect(() => {
-    axios.get("http://localhost:5050/unpaid_fees")
+    axios.get(`${API_BASE}/unpaid_fees`)
       .then(res => {
         setUnpaid(res.data);
         setLoading(false);

@@ -1,18 +1,15 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState } from "react";
+import api from "./api";
 
 export default function RegisterStudent() {
-  const [form, setForm] = useState({ name: '', phone: '', email: '' });
+  const [form, setForm] = useState({ name: "", phone: "", email: "" });
   const [errors, setErrors] = useState({});
-  const [success, setSuccess] = useState('');
-
-  // ✅ Use deployed backend API instead of localhost
-  const API_BASE = "https://ht-backend-5eby.onrender.com";
+  const [success, setSuccess] = useState("");
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
-    setErrors({});  // clear errors on input
-    setSuccess('');
+    setErrors({});
+    setSuccess("");
   };
 
   const validateForm = () => {
@@ -22,27 +19,31 @@ export default function RegisterStudent() {
     const phonePattern = /^[6-9]\d{9}$/;
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (!name.trim()) newErrors.name = 'Name is required';
-    if (!phonePattern.test(phone)) newErrors.phone = 'Enter a valid 10-digit phone number';
-    if (!emailPattern.test(email)) newErrors.email = 'Enter a valid email address';
+    if (!name.trim()) newErrors.name = "Name is required";
+    if (!phonePattern.test(phone))
+      newErrors.phone = "Enter a valid 10-digit phone number";
+    if (!emailPattern.test(email)) newErrors.email = "Enter a valid email";
 
     setErrors(newErrors);
-
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!validateForm()) return;
 
     try {
-      const res = await axios.post(`${API_BASE}/register`, form);
-      setSuccess('Student registered successfully!');
-      setForm({ name: '', phone: '', email: '' });
+      // POST /api/register
+      await api.post("/api/register", form);
+      setSuccess("✅ Student registered successfully!");
+      setForm({ name: "", phone: "", email: "" });
     } catch (err) {
-      setSuccess('');
-      setErrors({ submit: 'Registration failed. Try again.' });
+      setSuccess("");
+      setErrors({
+        submit:
+          err.message ||
+          "Registration failed. Try again.",
+      });
     }
   };
 
@@ -50,7 +51,7 @@ export default function RegisterStudent() {
     <div>
       <h2>Register Student</h2>
 
-      <form onSubmit={handleSubmit} style={{ maxWidth: '400px' }}>
+      <form onSubmit={handleSubmit} style={{ maxWidth: "400px" }}>
         <div>
           <input
             type="text"
@@ -59,7 +60,7 @@ export default function RegisterStudent() {
             value={form.name}
             onChange={handleChange}
           />
-          {errors.name && <div style={{ color: 'red' }}>{errors.name}</div>}
+          {errors.name && <div style={{ color: "red" }}>{errors.name}</div>}
         </div>
 
         <div>
@@ -70,7 +71,7 @@ export default function RegisterStudent() {
             value={form.phone}
             onChange={handleChange}
           />
-          {errors.phone && <div style={{ color: 'red' }}>{errors.phone}</div>}
+          {errors.phone && <div style={{ color: "red" }}>{errors.phone}</div>}
         </div>
 
         <div>
@@ -81,13 +82,19 @@ export default function RegisterStudent() {
             value={form.email}
             onChange={handleChange}
           />
-          {errors.email && <div style={{ color: 'red' }}>{errors.email}</div>}
+          {errors.email && <div style={{ color: "red" }}>{errors.email}</div>}
         </div>
 
-        <button type="submit" style={{ marginTop: '10px' }}>Register</button>
+        <button type="submit" style={{ marginTop: "10px" }}>
+          Register
+        </button>
 
-        {errors.submit && <div style={{ color: 'red', marginTop: '8px' }}>{errors.submit}</div>}
-        {success && <div style={{ color: 'green', marginTop: '8px' }}>{success}</div>}
+        {errors.submit && (
+          <div style={{ color: "red", marginTop: "8px" }}>{errors.submit}</div>
+        )}
+        {success && (
+          <div style={{ color: "green", marginTop: "8px" }}>{success}</div>
+        )}
       </form>
     </div>
   );

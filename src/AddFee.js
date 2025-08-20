@@ -1,56 +1,59 @@
-import React, { useState, useEffect } from 'react';
-import api from '../api'; // make sure the path is correct
+import React, { useState, useEffect } from "react";
+import api from "./api";
 
 export default function AddFee() {
   const [students, setStudents] = useState([]);
   const [form, setForm] = useState({
-    studentId: '',
-    amount: '',
-    dueDate: '',
+    studentId: "",
+    amount: "",
+    dueDate: "",
     paid: false,
   });
-  const [success, setSuccess] = useState('');
-  const [error, setError] = useState('');
+  const [success, setSuccess] = useState("");
+  const [error, setError] = useState("");
 
-  // fetch students from backend
   useEffect(() => {
-    api.get('/api/students')
-      .then(res => setStudents(res.data))
+    // GET /api/students
+    api
+      .get("/api/students")
+      .then((res) => setStudents(res.data || []))
       .catch(() => setStudents([]));
   }, []);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setForm({ ...form, [name]: type === 'checkbox' ? checked : value });
-    setSuccess('');
-    setError('');
+    setForm((f) => ({ ...f, [name]: type === "checkbox" ? checked : value }));
+    setSuccess("");
+    setError("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.studentId || !form.amount || !form.dueDate) {
-      setError('All fields are required.');
+      setError("All fields are required.");
       return;
     }
     try {
-      await api.post('/add_fee', form);  // ✅ uses api.js instead of axios.post
-      setSuccess('Fee added successfully!');
-      setError('');
-      setForm({
-        studentId: '',
-        amount: '',
-        dueDate: '',
-        paid: false,
+      // POST /add_fee
+      await api.post("/add_fee", {
+        studentId: form.studentId,
+        amount: Number(form.amount),
+        dueDate: form.dueDate,
+        paid: !!form.paid,
       });
+      setSuccess("Fee added successfully!");
+      setError("");
+      setForm({ studentId: "", amount: "", dueDate: "", paid: false });
     } catch (err) {
-      setError('Failed to add fee.');
-      setSuccess('');
+      setError(err.message || "Failed to add fee.");
+      setSuccess("");
     }
   };
 
   return (
     <form className="add-fee-card" onSubmit={handleSubmit} autoComplete="off">
       <h2>Add Fee</h2>
+
       <label htmlFor="studentId">Student</label>
       <select
         name="studentId"
@@ -60,9 +63,9 @@ export default function AddFee() {
         required
       >
         <option value="">Select Student</option>
-        {students.map(student => (
-          <option key={student._id} value={student._id}>
-            {student.name} ({student.phone})
+        {students.map((s) => (
+          <option key={s._id} value={s._id}>
+            {s.name} ({s.phone})
           </option>
         ))}
       </select>
@@ -99,7 +102,9 @@ export default function AddFee() {
         Paid?
       </label>
 
-      <button type="submit" className="add-fee-btn">Add Fee</button>
+      <button type="submit" className="add-fee-btn">
+        Add Fee
+      </button>
 
       {error && <div className="error">{error}</div>}
       {success && <div className="success">{success}</div>}

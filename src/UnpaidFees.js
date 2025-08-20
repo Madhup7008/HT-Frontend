@@ -1,20 +1,16 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import api from "./api";
 
 function UnpaidFeesTable() {
   const [unpaid, setUnpaid] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // ✅ Use deployed backend API
-  const API_BASE = "https://ht-backend-5eby.onrender.com";
-
   useEffect(() => {
-    axios.get(`${API_BASE}/unpaid_fees`)
-      .then(res => {
-        setUnpaid(res.data);
-        setLoading(false);
-      })
-      .catch(err => setLoading(false));
+    // GET /unpaid_fees
+    api
+      .get("/unpaid_fees")
+      .then((res) => setUnpaid(res.data || []))
+      .finally(() => setLoading(false));
   }, []);
 
   return (
@@ -32,22 +28,27 @@ function UnpaidFeesTable() {
         <tbody>
           {loading && (
             <tr>
-              <td colSpan={4} style={{ textAlign: "center" }}>Loading...</td>
+              <td colSpan={4} style={{ textAlign: "center" }}>
+                Loading...
+              </td>
             </tr>
           )}
           {!loading && unpaid.length === 0 && (
             <tr>
-              <td colSpan={4} style={{ textAlign: "center", color: "#bbb" }}>No unpaid fees.</td>
+              <td colSpan={4} style={{ textAlign: "center", color: "#bbb" }}>
+                No unpaid fees.
+              </td>
             </tr>
           )}
-          {!loading && unpaid.map((fee, idx) => (
-            <tr key={idx}>
-              <td>{fee.name}</td>
-              <td>{fee.phone}</td>
-              <td>₹{fee.amount}</td>
-              <td>{fee.dueDate ? fee.dueDate.slice(0, 10) : "--"}</td>
-            </tr>
-          ))}
+          {!loading &&
+            unpaid.map((fee, idx) => (
+              <tr key={idx}>
+                <td>{fee.name}</td>
+                <td>{fee.phone}</td>
+                <td>₹{fee.amount}</td>
+                <td>{fee.dueDate ? fee.dueDate.slice(0, 10) : "--"}</td>
+              </tr>
+            ))}
         </tbody>
       </table>
     </div>

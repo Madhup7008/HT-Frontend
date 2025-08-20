@@ -1,14 +1,17 @@
-// Centralized axios instance for your deployed backend
 import axios from "axios";
 
-// Works with both Vite and CRA env vars, with a safe fallback.
-const baseURL =
-  (typeof import !== "undefined" &&
-    import.meta &&
-    import.meta.env &&
-    import.meta.env.VITE_API_URL) ||
-  process.env.REACT_APP_API_URL ||
-  "https://ht-backend-5eby.onrender.com";
+// Works with both Vite (import.meta.env) and CRA (.env)
+let baseURL = "https://ht-backend-5eby.onrender.com";
+
+// If using Vite, check import.meta.env
+if (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_URL) {
+  baseURL = import.meta.env.VITE_API_URL;
+}
+
+// If using CRA, fallback to process.env
+if (process.env.REACT_APP_API_URL) {
+  baseURL = process.env.REACT_APP_API_URL;
+}
 
 const api = axios.create({
   baseURL,
